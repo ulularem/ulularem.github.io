@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Type Isomorphisms</title>
+
+    <meta name="description" content="Type Isomorphisms: Here to there and back again">
+    <meta name="author" content="Ethan Apter">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="reveal.js/css/reveal.min.css">
+    <link rel="stylesheet" href="reveal.js/css/theme/default.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="reveal.js/lib/css/zenburn.css">
+
+    <!-- custom style rules -->
+    <style media="screen" type="text/css">
+      .reveal h1,
+      .reveal h2,
+      .reveal h3,
+      .reveal h4,
+      .reveal h5,
+      .reveal h6 {
+        text-transform: none;
+      }
+      .reveal pre {
+        font-size: 90%;
+      }
+      .reveal td.etd {
+        text-align: center;
+      }
+      .reveal td.erh, .reveal th.eth {
+        text-align: center;
+        font-weight: bold;
+      }
+    </style>
+
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="reveal.js/lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>Type Isomorphisms</h1>
+          <h3>Here to there and back again</h3>
+          <br>
+          <p>
+            Ethan Apter<br>
+            <a href="https://github.com/ulularem/iso-talk">github.com/ulularem/iso-talk</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>Why type isomorphisms?</h2>
+          <ul>
+            <li class="fragment">You already use them, ad hoc</li>
+            <li class="fragment">You can use them better</li>
+            <li class="fragment">Library writers use them</li>
+            <li class="fragment">They're cool!</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Type isomorphisms</h2>
+          <p>
+            Intuition: types contain basically the same information
+          </p>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- Types a and b are isomorphic (a ≅ b)
+-- if there are functions
+to :: a -> b
+from :: b -> a
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- that respect these laws
+from . to ≡ id
+to . from ≡ id
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>(a,b) ≅ (b,a)</h2>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+toSwapped :: (a,b) -> (b,a)
+toSwapped (x,y) = (y,x)
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+fromSwapped :: (b,a) -> (a,b)
+fromSwapped (y,x) = (x,y)
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+fromSwapped . toSwapped ≡ id
+toSwapped . fromSwapped ≡ id
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Bool ≅ Either () ()</h2>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+toEither :: Bool -> Either () ()
+toEither b = if b then Left () else Right ()
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+fromEither :: Either () () -> Bool
+fromEither = either (const True) (const False)
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+fromEither . toEither ≡ id
+toEither . fromEither ≡ id
+          </code></pre>
+        </section>
+
+<!-- A good, general motivating statement is something like a diagram:
+
+           g
+      b ~~~~~~~> b'
+      ^          |
+      |          |from
+   to |          |
+      |          v
+      a ~~~~~~~> a'
+           f
+
+  You could always define f directly, but if you have a lot of functions
+  of type b -> b', being able convert a to b and back is useful.
+
+-->
+
+        <section>
+          <section>
+            <h2>Type algebra</h2>
+            <p class="fragment">
+              Two types are isomorphic when they have the same
+              number of values (inhabitants).
+            </p>
+            <p class="fragment">
+              If we can count the number of values, we have an
+              easy way of deciding whether two types are isomorphic.
+            </p>
+            <br>
+            <ul class="fragment">
+              <li>Chris Taylor's <a href="http://chris-taylor.github.io/blog/2013/02/10/the-algebra-of-algebraic-data-types">The Algebra of Algebraic Data Types</a></li>
+            </ul>
+          </section>
+          <section>
+            <h2>Type algebra</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data Void
+            </code>0</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data Unit = Unit
+-- Unit ≅ ()
+            </code>1</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data Bool = False | True
+            </code>2 = 1 + 1</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data Ord = LT | EQ | GT
+            </code>3 = 1 + 1 + 1</pre>
+          </section>
+          <section>
+            <h2>Type algebra</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+data Maybe a = Nothing | Just a
+            </code>1 + a</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data Either a b = Left a | Right b
+-- Either is a "sum type"
+            </code>a + b</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data Pair a b = Pair a b
+-- Pair a b ≅ (a,b)
+-- (a,b) is a "product type"
+            </code>a * b</pre>
+          </section>
+          <section>
+            <h2>Type algebra</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data PairOrTriple a b c = P a b | T a b c
+            </code>(a * b) + (a * b * c)</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+data List a = Nil | Cons a (List a)
+&nbsp;
+&nbsp;
+&nbsp;
+            </code>&nbsp;</pre>
+            <br>
+            <p>
+              &nbsp;
+            </p>
+          </section>
+          <section>
+            <h2>Type algebra</h2>
+            <pre class=><code class="haskell" data-trim contenteditable>
+data PairOrTriple a b c = P a b | T a b c
+            </code>(a * b) + (a * b * c)</pre>
+            <pre><code class="haskell" data-trim contenteditable>
+data List a = Nil | Cons a (List a)
+-- data List = Nil
+--            | Cons a (Nil)
+--            | Cons a (Cons a (List a))
+            </code><div class="fragment">1 + a + (a * a) + (a * a * a) + ...</div></pre>
+            <br>
+            <p class="fragment">
+              datatypes are (recursive) sums of products
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Algebraic laws</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+a ≅ Either Void a
+            </code>a = 0 + a</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+Either a b ≅ Either b a
+            </code>a + b = b + a</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+Either a (Either b c) ≅ Either (Either a b) c
+            </code>a + (b + c) = (a + b) + c</pre>
+          </section>
+          <section>
+            <h2>Algebraic laws</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+a ≅ ((),a)
+            </code>a = 1 * a</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+Void ≅ (Void,a)
+            </code>0 = 0 * a</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+(a,b) ≅ (b,a)
+            </code>a * b = b * a</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+(a,(b,c)) ≅ ((a,b),c)
+            </code>a * (b * c) = (a * b) * c</pre>
+          </section>
+          <section>
+            <h2>Algebraic laws</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+(a, Either b c) ≅ Either (a,b) (a,c)
+            </code>a * (b + c) = (a * b) + (a * c)</pre>
+          </section>
+        </section>
+
+        <section>
+          <h2>So far</h2>
+          <p class="fragment">
+            Types are isomorphic* to algebraic expressions<br>
+            (of natural numbers with addition and multiplication)
+          </p>
+          <br>
+          <br>
+          <br>
+          <br>
+          <p class="fragment">
+            * Well, not quite. We have to ignore things like naming.
+          </p>
+        </section>
+
+        <section>
+          <section>
+            <h2>Functions</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+a -> b
+            </code>How many are there?</pre>
+          </section>
+          <section>
+            <h2>Functions</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+Ord -> Bool
+-- data Ord = LT | EQ | GT
+-- data Bool = False | True
+            </code></pre>
+            <pre class="fragment">
+Each input (Ord) must have an output (Bool)</pre>
+            <pre class="fragment">
+LT can be either False or True (2 values)
+EQ can be ...
+GT can be ...</pre>
+            <pre class="fragment">
+2 * 2 * 2 = 2^3 = 8</pre>
+          </section>
+          <section>
+            <h2>Functions</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+a -> b
+            </code>b^a</pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>More algebraic laws</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+() -> a ≅ a
+            </code>a^1 = a</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+a -> () ≅ 1
+            </code>1^a = 1</pre>
+          </section>
+          <section>
+            <h2>More algebraic laws</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+(a,b) -> c ≅ a -> b -> c
+            </code>c^(a * b) = (c^b)^a
+<div class="fragment">currying!</div></pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+c -> (a,b) ≅ (c -> a, c -> b)
+            </code>(a * b)^c = a^c * b^c</pre>
+          </section>
+          <section>
+            <h2>More algebraic laws</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+Either a b -> c ≅ (a -> c, b -> c)
+            </code>c^(a + b) = (c^a) * (c^b)</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+a -> Either b c ≅ ???
+            </code>(b + c)^a = b^a + b^(a-1) * c + ... + c^a</pre>
+          </section>
+        </section>
+
+<!-- TODO insert Lens.Control.Iso here -->
+
+        <section>
+          <h2>MemoTrie</h2>
+
+          <p>
+            MemoTrie: memoizes functions as tries
+          </p>
+          <br>
+          <ul>
+            <li>Conal Elliott's <a href="http://conal.net/blog/posts/elegant-memoization-with-functional-memo-tries">Elegant memoization with functional memo tries</a></li>
+            <li>Hackage: <a href="http://hackage.haskell.org/package/MemoTrie">http://hackage.haskell.org/package/MemoTrie</a></li>
+          </ul>
+          </p>
+        </section>
+
+        <section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- Types are memoizable when we can construct
+-- a datatype isomorphic to a function type
+-- (a :->: b) ≅ (a -> b)
+class HasTrie a where
+  data (a :->: b)
+&nbsp;
+&nbsp;
+&nbsp;
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+-- Types are memoizable when we can construct
+-- a datatype isomorphic to a function type
+-- (a :->: b) ≅ (a -> b)
+class HasTrie a where
+  data (a :->: b)
+  -- Convert to function and back
+  trie ::   (a  ->  b) -> (a :->: b)
+  untrie :: (a :->: b) -> (a  ->  b)
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+memo :: HasTrie a => (a -> b) -> (a -> b)
+memo = untrie . trie
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance HasTrie () where
+  -- b^1 =
+  data () :->: b =
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance HasTrie () where
+  -- b^1 = b
+  data () :->: b = UnitTrie b
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a, HasTrie b) =>
+    HasTrie (Either a b) where
+&nbsp;
+  -- c^(a + b) =
+  data (Either a b) :->: c =
+&nbsp;
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a, HasTrie b) =>
+    HasTrie (Either a b) where
+&nbsp;
+  -- c^(a + b) = (c^a) * (c^b)
+  data (Either a b) :->: c =
+      EitherTrie (a :->: c) (b :->: c)
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a, HasTrie b) =>
+    HasTrie (a,b) where
+&nbsp;
+  -- c^(a * b) =
+  data (a,b) :->: c =
+&nbsp;
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a, HasTrie b) =>
+    HasTrie (a,b) where
+&nbsp;
+  -- c^(a * b) = (c^b)^a
+  data (a,b) :->: c =
+      PairTrie (a :->: (b :->: c))
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a) => HasTrie [a] where
+  -- b^(1 + (a * [a])) =
+  data [a] :->: b =
+&nbsp;
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a) => HasTrie [a] where
+  -- b^(1 + (a * [a])) = b * ((b^[a])^a)
+  data [a] :->: b =
+      ListTrie b (a :->: ([a] :->: b))
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <p>
+              But there was nothing in [a] that we hadn't solved before.
+            </p>
+            <br>
+            <p>
+              [a] is just a (recursive) sum of products!
+            </p>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a) => HasTrie [a] where
+  -- [a] = 1 + (a * [a])
+  data [a] :->: b =
+      ListTrie (Either () (a,[a]) :->: b)
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+            </code></pre>
+          </section>
+          <section>
+            <h2>MemoTrie</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+instance (HasTrie a) => HasTrie [a] where
+  -- [a] = 1 + (a * [a])
+  data [a] :->: b =
+      ListTrie (Either () (a,[a]) :->: b)
+&nbsp;
+  -- Either () (a,[a]) ≅ [a]
+  list :: Either () (a,[a]) -> [a]
+  unlist :: [a] -> Either () (a,[a])
+            </code></pre>
+          </section>
+          <section>
+            <h2>Hmm</h2>
+            <p>
+              Since datatypes are just sums of products, we should
+              be able to automatically derive that [a] ≅ Either () (a,[a])
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <h2>Generics</h2>
+          <p>
+            GHC.Generics: datatype-generic programming
+          </p>
+          <br>
+          <ul>
+            <li>HaskellWiki: <a href="http://www.haskell.org/haskellwiki/GHC.Generics">GHC.Generics</a></li>
+            <li>Hackage: <a href="http://hackage.haskell.org/package/generic-deriving">generic-deriving</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <section>
+            <h2>Generics</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+{-# LANGUAGE DeriveGeneric #-}
+
+data List' a = Nil' | Cons' a (List' a)
+  deriving Generic
+            </code></pre>
+          </section>
+          <section>
+            <h2>Generics</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+type Rep (List' a) ≈
+  U1 :+:
+    (a :*: (List' a))
+            </code></pre>
+          </section>
+          <section>
+            <h2>Generics</h2>
+            <pre><code class="haskell" data-trim contenteditable>
+type Rep (List' a) = D1 Gen.D1List'
+  (C1 Gen.C1_0List' U1
+    :+: C1 Gen.C1_1List'
+      (S1 NoSelector (Rec0 a)
+        :*: S1 NoSelector (Rec0 (List' a))))
+            </code></pre>
+          </section>
+          <section>
+            <h2>Generics and MemoTrie</h2>
+            <pre>
+If we define a Generic instance of HasTrie,
+then users can easily make their datatypes
+instances of HasTrie, too.</pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+{-# LANGUAGE DeriveGeneric #-}
+
+data List' a = Nil' | Cons' a (List' a)
+  deriving Generic
+
+instance (HasTrie a) => HasTrie (List' a)
+            </code></pre>
+            <p class="fragment">
+              Full details at <a href="http://hackage.haskell.org/package/generic-deriving-1.6.3/docs/Generics-Deriving-Base.html">Generics.Deriving.Base</a>
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <h2>Type isomorphisms are</h2>
+          <ul>
+            <li class="fragment">an abstract approach to datatypes</li>
+            <li class="fragment">similar to algebra on natural numbers</li>
+            <li class="fragment">useful for exporting your library's typeclasses</li>
+          </ul>
+        </section>
+
+        <section>
+          <h1>End</h1>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="reveal.js/lib/js/head.min.js"></script>
+    <script src="reveal.js/js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+        // parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>

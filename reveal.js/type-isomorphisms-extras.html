@@ -1,0 +1,220 @@
+
+
+        <section>
+          <h2>Examples</h2>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- (a,b) ≅ (b,a)
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+to = swap
+from = swap
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- Bool ≅ Either () ()
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+to b = if b then Left () else Right ()
+from = either (const True) (const False)
+          </code></pre>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Type algebra</h2>
+            <p>
+<!-- TODO do something better with this notation 
+     "|" can be confusing: is it alternating between values in a sum type?
+
+     -->
+              |a| ∣SomeType∣ - The number of values that have type a ∥ ∣
+            </p>
+
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Void| ∣Void∣= ?
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |()|         = ?
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Bool|       = ?
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Maybe a|    = ?
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Either a b| = ?
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |(a,b)|      = ?
+            </code></pre>
+          </section>
+          <section>
+            <h2>...type algebra...</h2>
+            <p>
+              |a| - The number of values that have type a
+            </p>
+
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Void|       = 0
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |()|         = 1
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Bool|       = 2
+            </code></pre>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Maybe a|    = 1 + |a|
+            </code></pre>
+            <p>
+&nbsp;
+            </p>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |Either a b| = |a| + |b|
+            </code></pre>
+            <p>
+a + b
+            </p>
+            <pre><code class="haskell" data-trim contenteditable>
+-- |(a,b)|      = |a| * |b|
+            </code></pre>
+            <p>
+a * b
+            </p>
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Examples Revisited</h2>
+
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- (a,b) ≅ (b,a)
+-- |a| * |b| = |b| * |a|
+            </code></pre>
+            <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- Bool ≅ Either () ()
+-- 2 = 1 + 1
+            </code></pre>
+          </section>
+        </section>
+
+
+<!-- Table of function values -->
+            <table class="reveal fragment">
+              <tr>
+                <th class="eth"></th>
+                <th class="eth"></th>
+                <th class="eth"></th>
+                <th class="eth"></th>
+                <th class="eth"></th>
+                <th class="eth"></th>
+                <th class="eth"></th>
+                <th class="eth"></th>
+                <th class="eth" style="visibility:hidden">&nbsp;</th>
+              </tr>
+              <tr>
+                <td class="erh">X</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+              </tr>
+              <tr>
+                <td class="erh">Y</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+              </tr>
+              <tr>
+                <td class="erh">Z</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+              </tr>
+            </table>
+
+
+
+            <table class="reveal">
+              <tr>
+                <th class="eth"></th>
+                <th class="eth">f1</th>
+                <th class="eth">f2</th>
+                <th class="eth">f3</th>
+                <th class="eth">f4</th>
+                <th class="eth">f5</th>
+                <th class="eth">f6</th>
+                <th class="eth">f7</th>
+                <th class="eth">f8</th>
+              </tr>
+              <tr>
+                <td class="erh">X</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+              </tr>
+              <tr>
+                <td class="erh">Y</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">False</td>
+              </tr>
+              <tr>
+                <td class="erh">Z</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+                <td class="etd">True</td>
+                <td class="etd">False</td>
+              </tr>
+            </table>
+
+<!-- Maybe talk about what we don't have? (subtraction, division, roots) -->
+
+<!-- Records? Maybe start with a non-recursive type? -->
+
+<!-- Eventually, show memoization of Lists -->
+
+        <section>
+          <h2>Data Types</h2>
+
+          <pre><code class="haskell" data-trim contenteditable>
+data List a = Nil | Cons a (List a)
+          </code></pre>
+          <pre class="fragment"><code class="haskell" data-trim contenteditable>
+-- |List a| = 1 + |a| * |List a|
+-- |List a| = 1 + |a| * |1 + |a| * |List a||
+-- |List a| = 1 + |a| * |1 + |a| * |1 + |a| * |List a|||
+-- |List a| = 1 + |a| + |a|^2 + |a|^3 + ...
+          </code></pre>
+        </section>
